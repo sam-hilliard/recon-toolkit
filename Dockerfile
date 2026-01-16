@@ -20,24 +20,25 @@ WORKDIR /home/reconuser
 
 # Install Go-based recon tools
 RUN go install github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest \
- && go install github.com/projectdiscovery/shuffledns/cmd/shuffledns@latest \
  && go install github.com/projectdiscovery/httpx/cmd/httpx@latest \
  && go install github.com/projectdiscovery/naabu/v2/cmd/naabu@latest \
  && go install github.com/tomnomnom/anew@latest \
- && go install -v github.com/projectdiscovery/dnsx/cmd/dnsx@latest
+ && go install github.com/projectdiscovery/dnsx/cmd/dnsx@latest
 
 # Temporarily switch to root to allow naabu raw socket capability
 USER root
 RUN setcap cap_net_raw=ep /home/reconuser/go/bin/naabu
 
-USER reconuser
-
 # wordlists
-RUN mkdir -p /home/reconuser/wordlists \
+RUN mkdir -p /opt/wordlists \
  && curl -fsSL https://wordlists-cdn.assetnote.io/data/manual/best-dns-wordlist.txt \
-       -o /home/reconuser/wordlists/commonspeak2.txt
+       -o /opt/wordlists/commonspeak2.txt
+RUN chown reconuser:reconuser /opt/wordlists/commonspeak2.txt
+
+USER reconuser
 
 COPY --chown=reconuser:reconuser provider-config.yaml /home/reconuser/provider-config.yaml
 COPY --chown=reconuser:reconuser recon.sh /usr/local/bin/recon.sh
+RUN chmod +x /usr/local/bin/recon.sh
 
-WORKDIR /home/reconuser
+WORKDIR /bounty
