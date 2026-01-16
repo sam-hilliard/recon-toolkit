@@ -73,3 +73,10 @@ Or specify a target directory:
 ```bash
 $ recon /path/to/bounty/workspace
 ```
+
+Can also interactively run tools from the container:
+
+``` bash
+$ docker run -it -v "$PWD:/bounty" -w /bounty recon-toolkit
+$ subfinder -dL wildcards.txt
+```
