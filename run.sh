@@ -1,20 +1,35 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/usr/bin/bash
 
 IMAGE_NAME="recon-toolkit"
 CONTAINER_WORKDIR="/bounty"
-SCRIPT_PATH="/usr/local/bin/recon.sh"
 
 # Docker exists
 if ! command -v docker >/dev/null 2>&1; then
   echo "[!] Docker is not installed or not in PATH"
-  echo "    Install Docker first: https://docs.docker.com/get-docker/"
   exit 1
 fi
 
+# Parse args
+INTERACTIVE=false
+
+while getopts ":i" opt; do
+  case $opt in
+    i)
+      INTERACTIVE=true
+      ;;
+    \?)
+      echo "[!] Invalid option: -$OPTARG"
+      echo "Usage: recon [-i] [directory]"
+      exit 1
+      ;;
+  esac
+done
+
+shift $((OPTIND -1))
+
 # Only accept <= 1 arg (optional directory arg)
 if [[ $# -gt 1 ]]; then
-  echo "[!] Usage: recon [directory]"
+  echo "[!] Usage: recon [-i] [directory]"
   exit 1
 fi
 
@@ -37,10 +52,15 @@ if ! docker image inspect "$IMAGE_NAME" >/dev/null 2>&1; then
   exit 1
 fi
 
-# Run recon script
-docker run --rm -it \
-  --user "$(id -u):$(id -g)" \
-  -v "$TARGET_DIR:$CONTAINER_WORKDIR" \
-  -w "$CONTAINER_WORKDIR" \
-  "$IMAGE_NAME" \
-  "$SCRIPT_PATH"
+# Run
+if $INTERACTIVE; then
+  docker run --rm -it \
+    --mount type=bind,target="$CONTAINER_WORKDIR",source="$TARGET_DIR" \
+    "$IMAGE_NAME" \
+    /bin/bash
+else
+  docker run --rm -it \
+    --mount type=bind,target="$CONTAINER_WORKDIR",source="$TARGET_DIR" \
+    "$IMAGE_NAME" \
+    recon.sh
+fi
