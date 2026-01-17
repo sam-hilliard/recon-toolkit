@@ -10,9 +10,6 @@ done
 subfinder -dL wildcards.txt \
   | anew subdomains.txt
 
-dnsx -d wildcards.txt -w /opt/wordlists/commonspeak2.txt \
-  | anew subdomains.txt
-
 naabu -l domains.txt -p "$PORTS" \
   | anew open_ports.txt
 
