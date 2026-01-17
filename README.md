@@ -6,16 +6,16 @@ A Docker container with preinstalled bug bounty recon tools (`subfinder`, `shuff
 
 ## Features
 
-- No need to install tools on your local machine (thanks to docker)
-- Pulls the latest tools everytime the container is built
-- Easy to run!
+* No need to install tools on your local machine (thanks to docker)
+* Pulls the latest tools everytime the container is built
+* Easy to run!
 
 ---
 
 ## Requirements
 
-- [Docker](https://docs.docker.com/get-docker/) installed on your system
-- A local workspace containing at least `domains.txt` and `wildcards.txt`
+* [Docker](https://docs.docker.com/get-docker/) installed on your system
+* A local workspace containing at least `domains.txt` and `wildcards.txt`
 
 Example workspace layout:
 
@@ -41,30 +41,32 @@ docker build -t recon-toolkit .
 
 ## Create `recon` shortcut (optional)
 
-give script executable permissions:
+Give script executable permissions:
 
-``` bash
+```bash
 chmod +x run.sh
 ```
 
-alias:
+Alias:
 
 ```bash
 echo "alias recon=/path/to/run.sh" >> ~/.bashrc
 ```
 
-symlink:
+Symlink:
 
 ```bash
 ln -s /path/to/run.sh /usr/bin/recon
 ```
+
+---
 
 ## Usage
 
 Run recon in the **current directory**:
 
 ```bash
-$ cd /path/to/bounty workspace
+$ cd /path/to/bounty/workspace
 $ recon
 ```
 
@@ -74,9 +76,35 @@ Or specify a target directory:
 $ recon /path/to/bounty/workspace
 ```
 
-Can also interactively run tools from the container:
+---
 
-``` bash
+## Interactive Mode (`-i`)
+
+Run the container without executing the recon script and drop into an interactive shell:
+
+```bash
+$ recon -i
+```
+
+Or specify a target directory:
+
+```bash
+$ recon -i /path/to/bounty/workspace
+```
+
+Once inside the container:
+
+```bash
+$ subfinder -dL wildcards.txt
+```
+
+---
+
+## Direct Docker Run (Optional)
+
+You can also run the container directly without using the `recon` script:
+
+```bash
 $ docker run -it -v "$PWD:/bounty" -w /bounty recon-toolkit
 $ subfinder -dL wildcards.txt
 ```
