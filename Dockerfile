@@ -25,8 +25,10 @@ RUN mkdir -p /opt/wordlists \
  && curl -fsSL https://wordlists-cdn.assetnote.io/data/manual/best-dns-wordlist.txt \
        -o /opt/wordlists/commonspeak2.txt
 
-COPY provider-config.yaml /root/provider-config.yaml
 COPY recon.sh /usr/local/bin/recon.sh
 RUN chmod +x /usr/local/bin/recon.sh
 
+COPY provider-config.yaml /root/.config/subfinder/provider-config.yaml
+
 RUN mkdir -p /bounty
+WORKDIR /bounty
